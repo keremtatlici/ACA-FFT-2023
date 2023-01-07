@@ -11,6 +11,7 @@ typedef std::valarray<Complex> CArray;
 
 using namespace std;
 
+
 // This function computes the 1D FFT of a given complex vector.
 // The input vector is overwritten with the result.
 void fft1d(vector<complex<double>> &x) 
@@ -21,7 +22,7 @@ void fft1d(vector<complex<double>> &x)
   if (N <= 1) return;
 
   // Split the input vector into even and odd indices
-  std::vector<std::complex<double>> even(N / 2), odd(N / 2);
+  vector<complex<double>> even(N / 2), odd(N / 2);
   for (size_t i = 0; i < N / 2; i++) 
   {
     even[i] = x[i * 2];
@@ -35,16 +36,72 @@ void fft1d(vector<complex<double>> &x)
   // Combine the results
   for (size_t k = 0; k < N / 2; k++) 
   {
-    std::complex<double> t = std::polar(1.0, -2 * M_PI * k / N) * odd[k];
+    complex<double> t = polar(1.0, -2 * M_PI * k / N) * odd[k];
     x[k] = even[k] + t;
     x[k + N / 2] = even[k] - t;
   }
 }
 
 
-void fft2d()
+void fft2d(vector<vector<complex<double>>> &x)
 {
+  const size_t rows = x.size();
+  const size_t cols = x[0].size();
+  
+  //printf("rows: %d, cols: %d", rows, cols);  
 
+  // 1 D fft row wise.
+  for (int row = 0; row < rows; row++)
+  {
+    fft1d(x[row]);
+  }
+  
+  // Transpose the matrix
+  vector<vector<complex<double>>> xtrans(x[0].size(), vector<complex<double>>(x.size()));
+
+  for (size_t i = 0; i < x.size(); ++i)
+  {
+    for (size_t j = 0; j < x[0].size(); ++j)
+      xtrans[j][i] = x[i][j];
+  }
+
+  x = xtrans;
+
+  // Printing the values
+  for (int i = 0; i < x.size(); i++)
+  {
+    for (int j = 0; j < x[i].size(); j++)
+    {
+      cout << x[i][j] << "  ";
+    }
+    cout << endl;
+  }
+
+  // 1 D fft col wise.
+  for (int col = 0; col < cols; col++)
+  {
+    fft1d(x[col]);
+  }
+  
+  // Transpose it again.
+  for (size_t i = 0; i < x.size(); ++i)
+  {
+    for (size_t j = 0; j < x[0].size(); ++j)
+      xtrans[j][i] = x[i][j];
+  }
+
+  x = xtrans;
+  
+  // Printing the values
+  for (int i = 0; i < x.size(); i++)
+  {
+    for (int j = 0; j < x[i].size(); j++)
+    {
+      cout << x[i][j] << "  ";
+    }
+    cout << endl;
+  }
+  cout << endl;
 }
 
 
@@ -76,19 +133,80 @@ void ifft1d(vector<complex<double>> &x)
   }
 }
 
-void ifft2d()
+void ifft2d(vector<vector<complex<double>>> &x)
 {
+  const size_t rows = x.size();
+  const size_t cols = x[0].size();
+  
+  //printf("rows: %d, cols: %d", rows, cols);  
+
+  // 1 D fft row wise.
+  for (int row = 0; row < rows; row++)
+  {
+    ifft1d(x[row]);
+  }
+  
+  // Transpose the matrix
+  vector<vector<complex<double>>> xtrans(x[0].size(), vector<complex<double>>(x.size()));
+
+  for (size_t i = 0; i < x.size(); ++i)
+  {
+    for (size_t j = 0; j < x[0].size(); ++j)
+      xtrans[j][i] = x[i][j];
+  }
+
+  x = xtrans;
+
+  // Printing the values
+  for (int i = 0; i < x.size(); i++)
+  {
+    for (int j = 0; j < x[i].size(); j++)
+    {
+      cout << x[i][j] << "  ";
+    }
+    cout << endl;
+  }
+
+  // 1 D fft col wise.
+  for (int col = 0; col < cols; col++)
+  {
+    ifft1d(x[col]);
+  }
+  
+  // Transpose it again.
+  for (size_t i = 0; i < x.size(); ++i)
+  {
+    for (size_t j = 0; j < x[0].size(); ++j)
+      xtrans[j][i] = x[i][j];
+  }
+
+  x = xtrans;
+
+  printf("Final Result \n");
+  // Printing the values
+  for (int i = 0; i < x.size(); i++)
+  {
+    for (int j = 0; j < x[i].size(); j++)
+    {
+      cout << x[i][j] << "  ";
+    }
+    cout << endl;
+  }
 
 }
-
 
 //main method
 //int main(int argc, char *argv[])
 int main()
 {
-  //vector<complex<double>> arr[4][4]; 
-  vector<complex<double>> arr = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 0, 0, 0, 0, 0}; 
-
+  vector<vector<complex<double>>> arr {
+                                  {1, 1, 1, 1},
+                                  {1, 1, 1, 1},
+                                  {1, 1, 1, 1},
+                                  {1, 1, 1, 1}
+                                };
+  //vector<complex<double>> arr = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 0, 0, 0, 0, 0}; 
+  
   /*
   // Initializing the values.
   for (int i = 0; i < arr.size(); i++)
@@ -100,23 +218,35 @@ int main()
   }
   */
 
-  fft1d(arr);
+  fft2d(arr);
   cout <<"The coefficients are : ";
 
+  /*
   // Printing the values
   for (int i = 0; i < arr.size(); i++)
   {
-    cout << arr[i] << endl;
+    for (int j = 0; j < arr[i].size(); j++)
+    {
+      cout << arr[i][j] << "  ";
+    }
+    cout << endl;
   }
+  */
 
-  ifft1d(arr);
+  ifft2d(arr);
 
   cout <<"After ifft : ";
 
+  /*
   // Printing the values
   for (int i = 0; i < arr.size(); i++)
   {
-    cout << arr[i] << endl;
+    for (int j = 0; j < arr[i].size(); j++)
+    {
+      cout << arr[i][j] << "  ";
+    }
+    cout << endl;
   }
+  */
   return 0;
 }
