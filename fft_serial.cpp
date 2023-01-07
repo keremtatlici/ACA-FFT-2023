@@ -54,9 +54,26 @@ void remove_coefficient()
 }
 
 
-void ifft1d()
+void ifft1d(vector<complex<double>> &x)
 {
-
+  // Taking the conjugate 
+  for (int i = 0; i < x.size(); i++)
+  {
+    x[i] = conj(x[i]);
+  }
+  fft1d(x);
+  
+  // Taking the conjugate 
+  for (int i = 0; i < x.size(); i++)
+  {
+    x[i] = conj(x[i]);
+  }
+  
+  // Normalizing the values. 
+  for (int i = 0; i < x.size(); i++)
+  {
+    x[i] /= x.size();
+  }
 }
 
 void ifft2d()
@@ -69,22 +86,37 @@ void ifft2d()
 //int main(int argc, char *argv[])
 int main()
 {
-    vector<complex<double>> arr = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 0, 0, 0, 0, 0};
-    
-    // Initializing the values.
-    for (int i = 0; i < arr.size(); i++)
-    {
-        cout << arr[i] << endl;    
-    }
+  //vector<complex<double>> arr[4][4]; 
+  vector<complex<double>> arr = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 0, 0, 0, 0, 0}; 
 
-    fft1d(arr);
-    cout <<"The coefficients are : ";
-
-    // Printing the values
-    for (int i = 0; i < arr.size(); i++)
+  /*
+  // Initializing the values.
+  for (int i = 0; i < arr.size(); i++)
+  {
+    for (int j = 0; j < arr[i].size(); j++)
     {
-        cout << arr[i] << endl;
+      arr[i][j] = i; 
     }
-    
-    return 0;
+  }
+  */
+
+  fft1d(arr);
+  cout <<"The coefficients are : ";
+
+  // Printing the values
+  for (int i = 0; i < arr.size(); i++)
+  {
+    cout << arr[i] << endl;
+  }
+
+  ifft1d(arr);
+
+  cout <<"After ifft : ";
+
+  // Printing the values
+  for (int i = 0; i < arr.size(); i++)
+  {
+    cout << arr[i] << endl;
+  }
+  return 0;
 }
