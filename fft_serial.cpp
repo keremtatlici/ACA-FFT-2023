@@ -42,7 +42,7 @@ void fft1d(vector<complex<double>> &x)
   }
 }
 
-
+// Function to do the 2d fft.
 void fft2d(vector<vector<complex<double>>> &x)
 {
   const size_t rows = x.size();
