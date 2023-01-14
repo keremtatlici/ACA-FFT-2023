@@ -32,3 +32,4 @@
 *.app
 
 .vscode
+datasets/gray/8192x8192_gray.txt
