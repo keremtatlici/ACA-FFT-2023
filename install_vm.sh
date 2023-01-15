@@ -11,3 +11,8 @@ sudo make install
 #PATH=$MPI_HOME/bin:$PATH
 
 
+#to run the code
+#mmpic++ -o fft_mpi fft_mpi.cpp -lm 
+#mpirun -np 4 ./fft_mpi
+
+
