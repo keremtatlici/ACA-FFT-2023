@@ -124,6 +124,8 @@ int main (int argc, char *argv[])
         int retVal = MPI_Recv(buf[i*chunk], MAX * chunk, MPI_C_DOUBLE_COMPLEX, i, 555, MPI_COMM_WORLD, &status);
     }
     
+    /*
+    // These operations are not needed.
     // Transpose the matrix second time
     for (size_t i = 0; i < rows; ++i)
     {
@@ -137,6 +139,7 @@ int main (int argc, char *argv[])
       for (size_t j = 0; j < cols; ++j)
         buf[i][j] = xtrans[i][j];
     }
+    */
     printf("I'm the master; I received the following values:\n");
 
     for (int i = 0; i < MAX; ++i) 
