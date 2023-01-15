@@ -18,7 +18,7 @@ pip3 install numpy
 
 
 #to run the code
-#mmpic++ -o fft_mpi fft_mpi.cpp -lm 
+#mpic++ -o fft_mpi fft_mpi.cpp -lm 
 #mpirun -np 4 ./fft_mpi
 
 
