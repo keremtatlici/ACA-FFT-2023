@@ -82,7 +82,8 @@ void fft2d(vector<vector<complex<double>>> &x)
   {
     fft1d(x[col]);
   }
-  
+
+  /*
   // Transpose it again.
   for (size_t i = 0; i < x.size(); ++i)
   {
@@ -91,7 +92,7 @@ void fft2d(vector<vector<complex<double>>> &x)
   }
 
   x = xtrans;
-  
+  */
   // Printing the values
   for (int i = 0; i < x.size(); i++)
   {
@@ -172,7 +173,7 @@ void ifft2d(vector<vector<complex<double>>> &x)
   {
     ifft1d(x[col]);
   }
-  
+  /* 
   // Transpose it again.
   for (size_t i = 0; i < x.size(); ++i)
   {
@@ -181,7 +182,7 @@ void ifft2d(vector<vector<complex<double>>> &x)
   }
 
   x = xtrans;
-
+  */
   printf("Final Result \n");
   // Printing the values
   for (int i = 0; i < x.size(); i++)
@@ -200,10 +201,10 @@ void ifft2d(vector<vector<complex<double>>> &x)
 int main()
 {
   vector<vector<complex<double>>> arr {
-                                  {1, 1, 1, 1},
-                                  {1, 1, 1, 1},
-                                  {1, 1, 1, 1},
-                                  {1, 1, 1, 1}
+                                  {3, 10, 12, 6},
+                                  {4, 3, 1, 2},
+                                  {3, 3, 1, 3},
+                                  {5, 3, 8, 6}
                                 };
   //vector<complex<double>> arr = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 0, 0, 0, 0, 0}; 
   
