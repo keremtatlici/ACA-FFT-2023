@@ -20,5 +20,6 @@ pip3 install numpy
 #to run the code
 #mpic++ -o fft_mpi fft_mpi.cpp -lm 
 #mpirun -np 4 ./fft_mpi
-
+# ulimit -s unlimited
+#mpic++ -o fft_mpi fft_mpi.cpp -lm;mpirun -np 6 ./fft_mpi
 

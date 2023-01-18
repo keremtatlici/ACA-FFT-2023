@@ -1,11 +1,20 @@
 #include <stdio.h>
+#include <fstream>
+#include <valarray>
 #include <mpi.h>
 #include <stdlib.h>
 #include <complex>
 #include <iostream>
 
-#define MAX 32
+
+#define MAX 512
 using namespace std;
+
+string path_image512 = "datasets/gray/512x512_gray.txt";
+string path_image1024 = "datasets/gray/1024x1024_gray.txt";
+string path_image2048 = "datasets/gray/2048x2048_gray.txt";
+string path_image4096 = "datasets/gray/4096x4096_gray.txt";
+string path_image8192= "datasets/gray/8192x8192_gray.txt";
 
 // This function computes the 1D FFT of a given complex vector.
 // The input vector is overwritten with the result.
@@ -76,7 +85,9 @@ int main (int argc, char *argv[])
   if (myrank == 0)
   {
     t1 = MPI_Wtime();
-
+    
+    /*
+    // Older code snippet to provide values in the 2d array.
     int count = 0;
     // I'm the master
     for (int i = 0; i < MAX; ++i) 
@@ -86,6 +97,26 @@ int main (int argc, char *argv[])
         buf[i][j] = count;
         count++;
       }
+    }
+    */
+    
+    // Reading the file path.
+    ifstream f(path_image512);
+    string line;
+    int firstIdx = 0;
+    
+    // Reading the txt file to store in a 2d matrix.
+    while (getline(f, line)) 
+    {
+        int val;
+        stringstream ss(line);
+        int secondIdx = 0;
+        while (ss >> val) 
+        {
+            buf[firstIdx][secondIdx] = val;
+            secondIdx++;
+        }
+        firstIdx++;
     }
     
     // Send the values for the 1st time.
@@ -98,6 +129,7 @@ int main (int argc, char *argv[])
      ****************************************************************************************************
      ****************************************************************************************************
     */
+    
     // FFT Part starts here.
     // 1 D fft row wise.
     for (int row = 0; row < chunk; row++)
