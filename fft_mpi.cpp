@@ -35,6 +35,28 @@ void fft1d(complex<double> *x, int N)
   }
 }
 
+void ifft1d(complex<double> *x, int N)
+{
+  // Taking the conjugate 
+  for (int i = 0; i < N; i++)
+  {
+    x[i] = conj(x[i]);
+  }
+  fft1d(x, N);
+  
+  // Taking the conjugate 
+  for (int i = 0; i < N; i++)
+  {
+    x[i] = conj(x[i]);
+  }
+  
+  // Normalizing the values. 
+  for (int i = 0; i < N; i++)
+  {
+    x[i] /= N;
+  }
+}
+
 
 int main (int argc, char *argv[]) 
 {
@@ -141,6 +163,74 @@ int main (int argc, char *argv[])
     }
     //printf("I'm the master; I received the following values:\n");
 
+    */
+    
+    // FFT Part ends here.
+    /****************************************************************************************************
+     ****************************************************************************************************
+     ****************************************************************************************************
+    */
+    // IFFT Part starts here.
+    
+    // Send the values for the 3rd time.
+    for (int i = 1; i < size; ++i) 
+    {
+      int retVal = MPI_Send(buf[i*chunk], MAX * chunk, MPI_C_DOUBLE_COMPLEX, i, 555, MPI_COMM_WORLD);
+    }
+    
+    // 1 D ifft row wise.
+    for (int row = 0; row < chunk; row++)
+    {
+      ifft1d(buf[row], MAX);
+    }
+
+    
+    // Receiving the data from all the slaves for third time.
+    for (int i = 1; i < size; ++i) 
+    {
+        int retVal = MPI_Recv(buf[i*chunk], MAX * chunk, MPI_C_DOUBLE_COMPLEX, i, 555, MPI_COMM_WORLD, &status);
+    }
+
+    // Transpose the matrix second time.
+    for (size_t i = 0; i < rows; ++i)
+    {
+      for (size_t j = 0; j < cols; ++j)
+        xtrans[j][i] = buf[i][j];
+    }
+
+    //Copying the values from xtrans back to x for second time.
+    for (size_t i = 0; i < rows; ++i)
+    {
+      for (size_t j = 0; j < cols; ++j)
+        buf[i][j] = xtrans[i][j];
+    }
+
+    // Send the values for the 4th time.
+    for (int i = 1; i < size; ++i) 
+    {
+      int retVal = MPI_Send(buf[i*chunk], MAX * chunk, MPI_C_DOUBLE_COMPLEX, i, 555, MPI_COMM_WORLD);
+    }
+    
+    // 1 D ifft col wise.
+    for (int row = 0; row < chunk; row++)
+    {
+      ifft1d(buf[row], MAX);
+    }
+
+    // Receiving the data from all the slaves for fourth time.
+    for (int i = 1; i < size; ++i) 
+    {
+        int retVal = MPI_Recv(buf[i*chunk], MAX * chunk, MPI_C_DOUBLE_COMPLEX, i, 555, MPI_COMM_WORLD, &status);
+    }
+
+    /****************************************************************************************************
+     ****************************************************************************************************
+     ****************************************************************************************************
+    */
+    // IFFT Part ends here.
+    
+    /*
+    // Printing the values.
     for (int i = 0; i < MAX; ++i) 
     {
       for (int j = 0; j < MAX; ++j) 
@@ -149,11 +239,6 @@ int main (int argc, char *argv[])
         cout <<"Rank : " << myrank << " value : " << buf[i][j] << endl;
       }
     }
-    */
-    
-    /****************************************************************************************************
-     ****************************************************************************************************
-     ****************************************************************************************************
     */
   }
   else
@@ -181,6 +266,7 @@ int main (int argc, char *argv[])
      ****************************************************************************************************
     */
     
+    // FFT Part starts here.
     // 1 D fft row wise.
     for (int row = 0; row < chunk; row++)
     {
@@ -215,12 +301,40 @@ int main (int argc, char *argv[])
 
     // Sending the data to the master second time.
     retVal = MPI_Send(buf1, MAX * chunk, MPI_C_DOUBLE_COMPLEX, 0, 555, MPI_COMM_WORLD);
+    // FFT Part ends here.
     /****************************************************************************************************
      ****************************************************************************************************
      ****************************************************************************************************
     */
+    // IFFT Part starts here.
+    // Receiving the value for the 3rd time.
+    retVal = MPI_Recv(buf1, MAX * chunk, MPI_C_DOUBLE_COMPLEX, 0, 555, MPI_COMM_WORLD, &status);
 
+    // 1 D ifft row wise.
+    for (int row = 0; row < chunk; row++)
+    {
+      ifft1d(buf1[row], MAX);
+    }
+    
+    // Sending the data to the master third time.
+    retVal = MPI_Send(buf1, MAX * chunk, MPI_C_DOUBLE_COMPLEX, 0, 555, MPI_COMM_WORLD);
 
+    // Receiving the value for the 4th time.
+    retVal = MPI_Recv(buf1, MAX * chunk, MPI_C_DOUBLE_COMPLEX, 0, 555, MPI_COMM_WORLD, &status);
+    
+    // 1 D ifft col wise.
+    for (int row = 0; row < chunk; row++)
+    {
+      fft1d(buf1[row], MAX);
+    }
+
+    // Sending the data to the master fourth time.
+    retVal = MPI_Send(buf1, MAX * chunk, MPI_C_DOUBLE_COMPLEX, 0, 555, MPI_COMM_WORLD);
+    /****************************************************************************************************
+     ****************************************************************************************************
+     ****************************************************************************************************
+    */
+    // IFFT Part ends here.
 
   }
 
