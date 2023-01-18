@@ -16,6 +16,12 @@ string path_image2048 = "datasets/gray/2048x2048_gray.txt";
 string path_image4096 = "datasets/gray/4096x4096_gray.txt";
 string path_image8192= "datasets/gray/8192x8192_gray.txt";
 
+string path_txt512 = "results/fft_txt/512x512_fft.txt";
+string path_txt1024 = "results/fft_txt/1024x1024_fft.txt";
+string path_txt2048 = "results/fft_txt/2048x2048_fft.txt";
+string path_txt4096 = "results/fft_txt/4096x4096_fft.txt";
+string path_txt8192 = "results/fft_txt/8192x8192_fft.txt";
+
 // This function computes the 1D FFT of a given complex vector.
 // The input vector is overwritten with the result.
 void fft1d(complex<double> *x, int N) 
@@ -261,7 +267,7 @@ int main (int argc, char *argv[])
     */
     // IFFT Part ends here.
     
-    
+    /* 
     // Printing the values.
     for (int i = 0; i < MAX; ++i) 
     {
@@ -271,7 +277,24 @@ int main (int argc, char *argv[])
         cout <<"Rank : " << myrank << " value : " << buf[i][j] << endl;
       }
     }
+    */
     
+    // Opening the file to store results in a txt file.
+    ofstream myfile (path_txt512);
+
+    // Storing the results in the txt file.
+    if (myfile.is_open())
+    {
+      for (int i = 0; i < MAX; ++i) 
+      {
+        for (int j = 0; j < MAX; ++j) 
+        {
+          myfile << buf[i][j] << " ";
+        }
+        myfile << endl;
+      }
+      myfile.close();
+    }
   }
   else
   {
