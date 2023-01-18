@@ -4,6 +4,7 @@
 #include <valarray>
 #include <fstream>
 
+#define size 512
 //g++ -std=c++11 playground.cpp -o playground.out
 
 using namespace std;
@@ -19,36 +20,38 @@ int main()
 {   
     ifstream f(path_image512);
     //store f in to a matrix
-    vector<vector<int>> matrix;
     string line;
-    while (getline(f, line)) {
+    int image[size][size];
+    
+    int i = 0;
+    while (getline(f, line)) 
+    {
         vector<int> row;
         int val;
         stringstream ss(line);
-        while (ss >> val) {
-            row.push_back(val);
+        int j = 0;
+        while (ss >> val) 
+        {
+            image[i][j] = val;
+            j++;
+            //row.push_back(val);
         }
-        matrix.push_back(row);
+        //matrix.push_back(row);
+        i++;
     }
-    int image[matrix.size()][matrix[0].size()];
 
-    for (int i = 0; i < matrix.size(); i++) {
-        for (int j = 0; j < matrix[i].size(); j++) {
-            image[i][j] = matrix[i][j];
-        }
-    }
     //print image
-    for (int i = 0; i < matrix.size(); i++) {
-        //print new line
-        cout << "\n\n\n" << endl;
-        for (int j = 0; j < matrix[i].size(); j++) {
-            cout << image[i][j] << " ";
-        }
-        cout << endl;
+    for (int i = 0; i < size; i++) 
+    {
+      //print new line
+      cout << "\n\n\n" << endl;
+      for (int j = 0; j < size; j++) 
+      {
+        cout << image[i][j] << " ";
+      }
+      cout << endl;
     }
 
     return 0;
-    
-
     
 }
