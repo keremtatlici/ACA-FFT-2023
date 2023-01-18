@@ -4,7 +4,7 @@
 #include <complex>
 #include <iostream>
 
-#define MAX 256
+#define MAX 32
 using namespace std;
 
 // This function computes the 1D FFT of a given complex vector.
@@ -229,7 +229,7 @@ int main (int argc, char *argv[])
     */
     // IFFT Part ends here.
     
-    /*
+    
     // Printing the values.
     for (int i = 0; i < MAX; ++i) 
     {
@@ -239,7 +239,7 @@ int main (int argc, char *argv[])
         cout <<"Rank : " << myrank << " value : " << buf[i][j] << endl;
       }
     }
-    */
+    
   }
   else
   {
@@ -325,7 +325,7 @@ int main (int argc, char *argv[])
     // 1 D ifft col wise.
     for (int row = 0; row < chunk; row++)
     {
-      fft1d(buf1[row], MAX);
+      ifft1d(buf1[row], MAX);
     }
 
     // Sending the data to the master fourth time.
