@@ -5,10 +5,11 @@
 #include <stdlib.h>
 #include <complex>
 #include <iostream>
+#include <map>
 
-
-#define MAX 512
 using namespace std;
+
+map<int, int> imageIndex{ { 512, 0 }, { 1024, 1 }, { 2048, 2 }, { 4096, 3 }, { 8192, 4 } };
 
 string path_image512 = "datasets/gray/512x512_gray.txt";
 string path_image1024 = "datasets/gray/1024x1024_gray.txt";
@@ -16,11 +17,15 @@ string path_image2048 = "datasets/gray/2048x2048_gray.txt";
 string path_image4096 = "datasets/gray/4096x4096_gray.txt";
 string path_image8192= "datasets/gray/8192x8192_gray.txt";
 
+string datasetImages[5] = {path_image512, path_image1024, path_image2048, path_image4096, path_image8192};
+
 string path_txt512 = "results/fft_txt/512x512_fft.txt";
 string path_txt1024 = "results/fft_txt/1024x1024_fft.txt";
 string path_txt2048 = "results/fft_txt/2048x2048_fft.txt";
 string path_txt4096 = "results/fft_txt/4096x4096_fft.txt";
 string path_txt8192 = "results/fft_txt/8192x8192_fft.txt";
+
+string resultantImages[5] = {path_txt512, path_txt1024, path_txt2048, path_txt4096, path_txt8192};
 
 // This function computes the 1D FFT of a given complex vector.
 // The input vector is overwritten with the result.
@@ -75,12 +80,26 @@ void ifft1d(complex<double> *x, int N)
 
 int main (int argc, char *argv[]) 
 {
+  
   MPI_Status status;
   int myrank, size;
-  
+  int MAX;
+
+  if ((argc == 2) && 
+      (atoi(argv[1]) == 512 || atoi(argv[1]) == 1024 || 
+       atoi(argv[1]) == 2048 || atoi(argv[1]) == 4096 ||
+       atoi(argv[1]) == 8192 ))
+  {
+    MAX = atoi(argv[1]);
+  }
+  else
+  {
+    cout <<"Error: Wrong size of the image. Please provide a valid size \n"
+    "Valid Size: 512, 1024, 2048, 4096 and 8192 \n";
+  }
   const size_t rows = MAX;
   const size_t cols = MAX;
-  complex<double> buf[rows][cols]; 
+  
 
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
@@ -91,6 +110,8 @@ int main (int argc, char *argv[])
   if (myrank == 0)
   {
     t1 = MPI_Wtime();
+    complex<double> buf[rows][cols]; 
+    
     
     /*
     // Older code snippet to provide values in the 2d array.
@@ -107,7 +128,7 @@ int main (int argc, char *argv[])
     */
     
     // Reading the file path.
-    ifstream f(path_image512);
+    ifstream f(datasetImages[imageIndex[MAX]]);
     string line;
     int firstIdx = 0;
     
@@ -280,7 +301,7 @@ int main (int argc, char *argv[])
     */
     
     // Opening the file to store results in a txt file.
-    ofstream myfile (path_txt512);
+    ofstream myfile (resultantImages[imageIndex[MAX]]);
 
     // Storing the results in the txt file.
     if (myfile.is_open())
