@@ -3,13 +3,40 @@
 #include <vector>
 #include <valarray>
 
+#include <stdio.h>
+#include <fstream>
+
+#include <stdlib.h>
+
+
+#include <map>
+using namespace std;
+
+map<int, int> imageIndex{ { 512, 0 }, { 1024, 1 }, { 2048, 2 }, { 4096, 3 }, { 8192, 4 } };
+
+string path_image512 = "datasets/gray/512x512_gray.txt";
+string path_image1024 = "datasets/gray/1024x1024_gray.txt";
+string path_image2048 = "datasets/gray/2048x2048_gray.txt";
+string path_image4096 = "datasets/gray/4096x4096_gray.txt";
+string path_image8192= "datasets/gray/8192x8192_gray.txt";
+
+string datasetImages[5] = {path_image512, path_image1024, path_image2048, path_image4096, path_image8192};
+
+string path_txt512 = "results/fft_txt/512x512_fft.txt";
+string path_txt1024 = "results/fft_txt/1024x1024_fft.txt";
+string path_txt2048 = "results/fft_txt/2048x2048_fft.txt";
+string path_txt4096 = "results/fft_txt/4096x4096_fft.txt";
+string path_txt8192 = "results/fft_txt/8192x8192_fft.txt";
+
+string resultantImages[5] = {path_txt512, path_txt1024, path_txt2048, path_txt4096, path_txt8192};
+
 
 const double PI = 3.141592653589793238460;
 
 typedef std::complex<double> Complex;
 typedef std::valarray<Complex> CArray;
 
-using namespace std;
+
 
 
 // This function computes the 1D FFT of a given complex vector.
@@ -67,15 +94,15 @@ void fft2d(vector<vector<complex<double>>> &x)
 
   x = xtrans;
 
-  // Printing the values
-  for (int i = 0; i < x.size(); i++)
-  {
-    for (int j = 0; j < x[i].size(); j++)
-    {
-      cout << x[i][j] << "  ";
-    }
-    cout << endl;
-  }
+  // // Printing the values
+  // for (int i = 0; i < x.size(); i++)
+  // {
+  //   for (int j = 0; j < x[i].size(); j++)
+  //   {
+  //     cout << x[i][j] << "  ";
+  //   }
+  //   cout << endl;
+  // }
 
   // 1 D fft col wise.
   for (int col = 0; col < cols; col++)
@@ -94,15 +121,15 @@ void fft2d(vector<vector<complex<double>>> &x)
   x = xtrans;
   */
   // Printing the values
-  for (int i = 0; i < x.size(); i++)
-  {
-    for (int j = 0; j < x[i].size(); j++)
-    {
-      cout << x[i][j] << "  ";
-    }
-    cout << endl;
-  }
-  cout << endl;
+  // for (int i = 0; i < x.size(); i++)
+  // {
+  //   for (int j = 0; j < x[i].size(); j++)
+  //   {
+  //     cout << x[i][j] << "  ";
+  //   }
+  //   cout << endl;
+  // }
+  // cout << endl;
 }
 
 
@@ -158,15 +185,15 @@ void ifft2d(vector<vector<complex<double>>> &x)
 
   x = xtrans;
 
-  // Printing the values
-  for (int i = 0; i < x.size(); i++)
-  {
-    for (int j = 0; j < x[i].size(); j++)
-    {
-      cout << x[i][j] << "  ";
-    }
-    cout << endl;
-  }
+  // // Printing the values
+  // for (int i = 0; i < x.size(); i++)
+  // {
+  //   for (int j = 0; j < x[i].size(); j++)
+  //   {
+  //     cout << x[i][j] << "  ";
+  //   }
+  //   cout << endl;
+  // }
 
   // 1 D fft col wise.
   for (int col = 0; col < cols; col++)
@@ -183,30 +210,56 @@ void ifft2d(vector<vector<complex<double>>> &x)
 
   x = xtrans;
   */
-  printf("Final Result \n");
-  // Printing the values
-  for (int i = 0; i < x.size(); i++)
-  {
-    for (int j = 0; j < x[i].size(); j++)
-    {
-      cout << x[i][j] << "  ";
-    }
-    cout << endl;
-  }
+  //printf("Final Result \n");
+  // // Printing the values
+  // for (int i = 0; i < x.size(); i++)
+  // {
+  //   for (int j = 0; j < x[i].size(); j++)
+  //   {
+  //     cout << x[i][j] << "  ";
+  //   }
+  //   cout << endl;
+  // }
 
 }
 
 //main method
 //int main(int argc, char *argv[])
-int main()
+int main(int argc, char *argv[])
 {
-  vector<vector<complex<double>>> arr {
-                                  {3, 10, 12, 6},
-                                  {4, 3, 1, 2},
-                                  {3, 3, 1, 3},
-                                  {5, 3, 8, 6}
-                                };
-  //vector<complex<double>> arr = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 0, 0, 0, 0, 0}; 
+  int MAX;
+  if ((argc == 2) && 
+      (atoi(argv[1]) == 512 || atoi(argv[1]) == 1024 || 
+       atoi(argv[1]) == 2048 || atoi(argv[1]) == 4096 ||
+       atoi(argv[1]) == 8192 ))
+  {
+    MAX = atoi(argv[1]);
+  }
+  else
+  {
+    cout <<"Error: Wrong size of the image. Please provide a valid size \n"
+    "Valid Size: 512, 1024, 2048, 4096 and 8192 \n";
+  }
+  vector<vector<complex<double>>> arr(MAX, vector<complex<double>>(MAX));
+
+  ifstream f(datasetImages[imageIndex[MAX]]);
+  string line;
+  int firstIdx = 0;
+  
+  // Reading the txt file to store in a 2d matrix.
+  while (getline(f, line)) 
+  {
+      int val;
+      stringstream ss(line);
+      int secondIdx = 0;
+      while (ss >> val) 
+      {
+          arr[firstIdx][secondIdx] = val;
+          secondIdx++;
+      }
+      firstIdx++;
+  }
+//vector<complex<double>> arr = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 0, 0, 0, 0, 0}; 
   
   /*
   // Initializing the values.
@@ -220,7 +273,7 @@ int main()
   */
 
   fft2d(arr);
-  cout <<"The coefficients are : ";
+  //cout <<"The coefficients are : ";
 
   /*
   // Printing the values
@@ -236,7 +289,7 @@ int main()
 
   ifft2d(arr);
 
-  cout <<"After ifft : ";
+  //cout <<"After ifft : ";
 
   /*
   // Printing the values
@@ -249,5 +302,23 @@ int main()
     cout << endl;
   }
   */
+
+
+  ofstream myfile (resultantImages[imageIndex[MAX]]);
+
+  // Storing the results in the txt file.
+  if (myfile.is_open())
+  {
+    for (int i = 0; i < MAX; ++i) 
+    {
+      for (int j = 0; j < MAX; ++j) 
+      {
+        myfile << arr[i][j] << " ";
+      }
+      myfile << endl;
+    }
+    myfile.close();
+  }
+
   return 0;
 }
