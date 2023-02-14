@@ -9,7 +9,12 @@ sudo make install
 sudo apt install python3 -y
 sudo apt install python3-pip -y
 pip3 install numpy
+apt-get install ffmpeg libsm6 libxext6  -y
+pip3 install opencv-python
 
+
+git config --global user.name "keremtatlici"
+git config --global user.email "krmttlc@gmail.com"
 
 
 # write me script that removes below lines from .bashrc
@@ -22,4 +27,6 @@ pip3 install numpy
 #mpirun -np 4 ./fft_mpi
 # ulimit -s unlimited
 #mpic++ -o fft_mpi fft_mpi.cpp -lm;mpirun -np 6 ./fft_mpi
+#ssh -l valerien -i Desktop/key 35.192.101.4
 
+#scp -i Desktop/key /Users/valerien/Downloads/id_rsa.pub valerien@34.28.191.186:/home/valerien/
