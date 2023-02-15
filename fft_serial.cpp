@@ -228,6 +228,7 @@ void ifft2d(vector<vector<complex<double>>> &x)
 int main(int argc, char *argv[])
 {
   int MAX;
+  clock_t start, end;
   if ((argc == 2) && 
       (atoi(argv[1]) == 512 || atoi(argv[1]) == 1024 || 
        atoi(argv[1]) == 2048 || atoi(argv[1]) == 4096 ||
@@ -240,6 +241,7 @@ int main(int argc, char *argv[])
     cout <<"Error: Wrong size of the image. Please provide a valid size \n"
     "Valid Size: 512, 1024, 2048, 4096 and 8192 \n";
   }
+  start = clock();
   vector<vector<complex<double>>> arr(MAX, vector<complex<double>>(MAX));
 
   ifstream f(datasetImages[imageIndex[MAX]]);
@@ -319,6 +321,7 @@ int main(int argc, char *argv[])
     }
     myfile.close();
   }
-
+  end = clock();
+   cout << (end-start)/1000000.0;
   return 0;
 }
