@@ -28,5 +28,5 @@ git config --global user.email "krmttlc@gmail.com"
 # ulimit -s unlimited
 #mpic++ -o fft_mpi fft_mpi.cpp -lm;mpirun -np 6 ./fft_mpi
 #ssh -l valerien -i Desktop/key 35.192.101.4
-
+#g++ -o fft_serial.out fft_serial.cpp -std=c++11;./fft_serial.out
 #scp -i Desktop/key /Users/valerien/Downloads/id_rsa.pub valerien@34.28.191.186:/home/valerien/

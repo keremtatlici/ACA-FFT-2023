@@ -9,7 +9,7 @@
 
 using namespace std;
 
-map<int, int> imageIndex{ { 512, 0 }, { 1024, 1 }, { 2048, 2 }, { 4096, 3 }, { 8192, 4 } };
+map<int, int> imageIndex{{ 512, 0 }, { 1024, 1 }, { 2048, 2 }, { 4096, 3 }, { 8192, 4 }};
 
 string path_image512 = "datasets/gray/512x512_gray.txt";
 string path_image1024 = "datasets/gray/1024x1024_gray.txt";

@@ -1,18 +1,14 @@
-#include <complex>
-#include <iostream>
-#include <vector>
-#include <valarray>
-
 #include <stdio.h>
 #include <fstream>
-
+#include <valarray>
 #include <stdlib.h>
-
-
+#include <complex>
+#include <iostream>
 #include <map>
+
 using namespace std;
 
-map<int, int> imageIndex{ { 512, 0 }, { 1024, 1 }, { 2048, 2 }, { 4096, 3 }, { 8192, 4 } };
+map<int, int> imageIndex{{ 512, 0 }, { 1024, 1 }, { 2048, 2 }, { 4096, 3 }, { 8192, 4 }};
 
 string path_image512 = "datasets/gray/512x512_gray.txt";
 string path_image1024 = "datasets/gray/1024x1024_gray.txt";
@@ -30,26 +26,15 @@ string path_txt8192 = "results/fft_txt/8192x8192_fft.txt";
 
 string resultantImages[5] = {path_txt512, path_txt1024, path_txt2048, path_txt4096, path_txt8192};
 
-
-const double PI = 3.141592653589793238460;
-
-typedef std::complex<double> Complex;
-typedef std::valarray<Complex> CArray;
-
-
-
-
 // This function computes the 1D FFT of a given complex vector.
 // The input vector is overwritten with the result.
-void fft1d(vector<complex<double>> &x) 
+void fft1d(complex<double> *x, int N) 
 {
-  const size_t N = x.size();
-
   // Base case
   if (N <= 1) return;
 
   // Split the input vector into even and odd indices
-  vector<complex<double>> even(N / 2), odd(N / 2);
+  complex<double> even[N / 2], odd[N / 2];
   for (size_t i = 0; i < N / 2; i++) 
   {
     even[i] = x[i * 2];
@@ -57,8 +42,8 @@ void fft1d(vector<complex<double>> &x)
   }
 
   // Recursively compute the FFT of the even and odd indices
-  fft1d(even);
-  fft1d(odd);
+  fft1d(even, N/2);
+  fft1d(odd, N/2);
 
   // Combine the results
   for (size_t k = 0; k < N / 2; k++) 
@@ -69,163 +54,30 @@ void fft1d(vector<complex<double>> &x)
   }
 }
 
-// Function to do the 2d fft.
-void fft2d(vector<vector<complex<double>>> &x)
-{
-  const size_t rows = x.size();
-  const size_t cols = x[0].size();
-  
-  //printf("rows: %d, cols: %d", rows, cols);  
-
-  // 1 D fft row wise.
-  for (int row = 0; row < rows; row++)
-  {
-    fft1d(x[row]);
-  }
-  
-  // Transpose the matrix
-  vector<vector<complex<double>>> xtrans(x[0].size(), vector<complex<double>>(x.size()));
-
-  for (size_t i = 0; i < x.size(); ++i)
-  {
-    for (size_t j = 0; j < x[0].size(); ++j)
-      xtrans[j][i] = x[i][j];
-  }
-
-  x = xtrans;
-
-  // // Printing the values
-  // for (int i = 0; i < x.size(); i++)
-  // {
-  //   for (int j = 0; j < x[i].size(); j++)
-  //   {
-  //     cout << x[i][j] << "  ";
-  //   }
-  //   cout << endl;
-  // }
-
-  // 1 D fft col wise.
-  for (int col = 0; col < cols; col++)
-  {
-    fft1d(x[col]);
-  }
-
-  /*
-  // Transpose it again.
-  for (size_t i = 0; i < x.size(); ++i)
-  {
-    for (size_t j = 0; j < x[0].size(); ++j)
-      xtrans[j][i] = x[i][j];
-  }
-
-  x = xtrans;
-  */
-  // Printing the values
-  // for (int i = 0; i < x.size(); i++)
-  // {
-  //   for (int j = 0; j < x[i].size(); j++)
-  //   {
-  //     cout << x[i][j] << "  ";
-  //   }
-  //   cout << endl;
-  // }
-  // cout << endl;
-}
-
-
-void remove_coefficient()
-{
-
-}
-
-
-void ifft1d(vector<complex<double>> &x)
+void ifft1d(complex<double> *x, int N)
 {
   // Taking the conjugate 
-  for (int i = 0; i < x.size(); i++)
+  for (int i = 0; i < N; i++)
   {
     x[i] = conj(x[i]);
   }
-  fft1d(x);
+  fft1d(x, N);
   
   // Taking the conjugate 
-  for (int i = 0; i < x.size(); i++)
+  for (int i = 0; i < N; i++)
   {
     x[i] = conj(x[i]);
   }
   
   // Normalizing the values. 
-  for (int i = 0; i < x.size(); i++)
+  for (int i = 0; i < N; i++)
   {
-    x[i] /= x.size();
+    x[i] /= N;
   }
 }
 
-void ifft2d(vector<vector<complex<double>>> &x)
-{
-  const size_t rows = x.size();
-  const size_t cols = x[0].size();
-  
-  //printf("rows: %d, cols: %d", rows, cols);  
 
-  // 1 D fft row wise.
-  for (int row = 0; row < rows; row++)
-  {
-    ifft1d(x[row]);
-  }
-  
-  // Transpose the matrix
-  vector<vector<complex<double>>> xtrans(x[0].size(), vector<complex<double>>(x.size()));
-
-  for (size_t i = 0; i < x.size(); ++i)
-  {
-    for (size_t j = 0; j < x[0].size(); ++j)
-      xtrans[j][i] = x[i][j];
-  }
-
-  x = xtrans;
-
-  // // Printing the values
-  // for (int i = 0; i < x.size(); i++)
-  // {
-  //   for (int j = 0; j < x[i].size(); j++)
-  //   {
-  //     cout << x[i][j] << "  ";
-  //   }
-  //   cout << endl;
-  // }
-
-  // 1 D fft col wise.
-  for (int col = 0; col < cols; col++)
-  {
-    ifft1d(x[col]);
-  }
-  /* 
-  // Transpose it again.
-  for (size_t i = 0; i < x.size(); ++i)
-  {
-    for (size_t j = 0; j < x[0].size(); ++j)
-      xtrans[j][i] = x[i][j];
-  }
-
-  x = xtrans;
-  */
-  //printf("Final Result \n");
-  // // Printing the values
-  // for (int i = 0; i < x.size(); i++)
-  // {
-  //   for (int j = 0; j < x[i].size(); j++)
-  //   {
-  //     cout << x[i][j] << "  ";
-  //   }
-  //   cout << endl;
-  // }
-
-}
-
-//main method
-//int main(int argc, char *argv[])
-int main(int argc, char *argv[])
+int main (int argc, char *argv[]) 
 {
   int MAX;
   if ((argc == 2) && 
@@ -238,72 +90,104 @@ int main(int argc, char *argv[])
   else
   {
     cout <<"Error: Wrong size of the image. Please provide a valid size \n"
-    "Valid Size: 512, 1024, 2048, 4096 and 8192 \n";
+      "Valid Size: 512, 1024, 2048, 4096 and 8192 \n";
   }
-  vector<vector<complex<double>>> arr(MAX, vector<complex<double>>(MAX));
 
+  const size_t rows = MAX;
+  const size_t cols = MAX;
+
+  clock_t t1, t2;
+
+  t1 = clock();
+  complex<double> buf[rows][cols]; 
+
+  // Reading the file path.
   ifstream f(datasetImages[imageIndex[MAX]]);
   string line;
   int firstIdx = 0;
-  
+
   // Reading the txt file to store in a 2d matrix.
   while (getline(f, line)) 
   {
-      int val;
-      stringstream ss(line);
-      int secondIdx = 0;
-      while (ss >> val) 
-      {
-          arr[firstIdx][secondIdx] = val;
-          secondIdx++;
-      }
-      firstIdx++;
-  }
-//vector<complex<double>> arr = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 0, 0, 0, 0, 0}; 
-  
-  /*
-  // Initializing the values.
-  for (int i = 0; i < arr.size(); i++)
-  {
-    for (int j = 0; j < arr[i].size(); j++)
+    int val;
+    stringstream ss(line);
+    int secondIdx = 0;
+    while (ss >> val) 
     {
-      arr[i][j] = i; 
+      buf[firstIdx][secondIdx] = val;
+      secondIdx++;
     }
+    firstIdx++;
   }
-  */
 
-  fft2d(arr);
-  //cout <<"The coefficients are : ";
 
-  /*
-  // Printing the values
-  for (int i = 0; i < arr.size(); i++)
+  // FFT Part starts here.
+  // 1 D fft row wise.
+  for (int row = 0; row < rows; row++)
   {
-    for (int j = 0; j < arr[i].size(); j++)
-    {
-      cout << arr[i][j] << "  ";
-    }
-    cout << endl;
+    fft1d(buf[row], MAX);
   }
-  */
 
-  ifft2d(arr);
+  complex<double> xtrans[rows][cols];
 
-  //cout <<"After ifft : ";
-
-  /*
-  // Printing the values
-  for (int i = 0; i < arr.size(); i++)
+  // Transpose the matrix first time.
+  for (size_t i = 0; i < rows; ++i)
   {
-    for (int j = 0; j < arr[i].size(); j++)
-    {
-      cout << arr[i][j] << "  ";
-    }
-    cout << endl;
+    for (size_t j = 0; j < cols; ++j)
+      xtrans[j][i] = buf[i][j];
   }
-  */
+
+  //Copying the values from xtrans back to x for first time.
+  for (size_t i = 0; i < rows; ++i)
+  {
+    for (size_t j = 0; j < cols; ++j)
+      buf[i][j] = xtrans[i][j];
+  }
 
 
+  // 1 D fft col wise.
+  for (int row = 0; row < rows; row++)
+  {
+    fft1d(buf[row], MAX);
+  }
+
+
+  // FFT Part ends here.
+  /****************************************************************************************************
+  ****************************************************************************************************
+  ****************************************************************************************************
+   */
+  // IFFT Part starts here.
+
+
+  // 1 D ifft row wise.
+  for (int row = 0; row < rows; row++)
+  {
+    ifft1d(buf[row], MAX);
+  }
+
+  // Transpose the matrix second time.
+  for (size_t i = 0; i < rows; ++i)
+  {
+    for (size_t j = 0; j < cols; ++j)
+      xtrans[j][i] = buf[i][j];
+  }
+
+  //Copying the values from xtrans back to x for second time.
+  for (size_t i = 0; i < rows; ++i)
+  {
+    for (size_t j = 0; j < cols; ++j)
+      buf[i][j] = xtrans[i][j];
+  }
+
+
+  // 1 D ifft col wise.
+  for (int row = 0; row < rows; row++)
+  {
+    ifft1d(buf[row], MAX);
+  }
+
+  // Opening the file to store results in a txt file.
   ofstream myfile (resultantImages[imageIndex[MAX]]);
 
   // Storing the results in the txt file.
@@ -313,12 +197,20 @@ int main(int argc, char *argv[])
     {
       for (int j = 0; j < MAX; ++j) 
       {
-        myfile << arr[i][j] << " ";
+        myfile << buf[i][j] << " ";
       }
       myfile << endl;
     }
     myfile.close();
   }
 
+  t2 = clock();
+
+  cout << (t2-t1)/1000000.0;
   return 0;
 }
+
+
+
+
+
