@@ -36,9 +36,6 @@ const double PI = 3.141592653589793238460;
 typedef std::complex<double> Complex;
 typedef std::valarray<Complex> CArray;
 
-
-
-
 // This function computes the 1D FFT of a given complex vector.
 // The input vector is overwritten with the result.
 void fft1d(vector<complex<double>> &x) 
@@ -73,9 +70,7 @@ void fft1d(vector<complex<double>> &x)
 void fft2d(vector<vector<complex<double>>> &x)
 {
   const size_t rows = x.size();
-  const size_t cols = x[0].size();
-  
-  //printf("rows: %d, cols: %d", rows, cols);  
+  const size_t cols = x[0].size();  
 
   // 1 D fft row wise.
   for (int row = 0; row < rows; row++)
@@ -94,50 +89,12 @@ void fft2d(vector<vector<complex<double>>> &x)
 
   x = xtrans;
 
-  // // Printing the values
-  // for (int i = 0; i < x.size(); i++)
-  // {
-  //   for (int j = 0; j < x[i].size(); j++)
-  //   {
-  //     cout << x[i][j] << "  ";
-  //   }
-  //   cout << endl;
-  // }
-
   // 1 D fft col wise.
   for (int col = 0; col < cols; col++)
   {
     fft1d(x[col]);
   }
-
-  /*
-  // Transpose it again.
-  for (size_t i = 0; i < x.size(); ++i)
-  {
-    for (size_t j = 0; j < x[0].size(); ++j)
-      xtrans[j][i] = x[i][j];
-  }
-
-  x = xtrans;
-  */
-  // Printing the values
-  // for (int i = 0; i < x.size(); i++)
-  // {
-  //   for (int j = 0; j < x[i].size(); j++)
-  //   {
-  //     cout << x[i][j] << "  ";
-  //   }
-  //   cout << endl;
-  // }
-  // cout << endl;
 }
-
-
-void remove_coefficient()
-{
-
-}
-
 
 void ifft1d(vector<complex<double>> &x)
 {
@@ -164,9 +121,7 @@ void ifft1d(vector<complex<double>> &x)
 void ifft2d(vector<vector<complex<double>>> &x)
 {
   const size_t rows = x.size();
-  const size_t cols = x[0].size();
-  
-  //printf("rows: %d, cols: %d", rows, cols);  
+  const size_t cols = x[0].size();  
 
   // 1 D fft row wise.
   for (int row = 0; row < rows; row++)
@@ -185,46 +140,14 @@ void ifft2d(vector<vector<complex<double>>> &x)
 
   x = xtrans;
 
-  // // Printing the values
-  // for (int i = 0; i < x.size(); i++)
-  // {
-  //   for (int j = 0; j < x[i].size(); j++)
-  //   {
-  //     cout << x[i][j] << "  ";
-  //   }
-  //   cout << endl;
-  // }
-
   // 1 D fft col wise.
   for (int col = 0; col < cols; col++)
   {
     ifft1d(x[col]);
   }
-  /* 
-  // Transpose it again.
-  for (size_t i = 0; i < x.size(); ++i)
-  {
-    for (size_t j = 0; j < x[0].size(); ++j)
-      xtrans[j][i] = x[i][j];
-  }
-
-  x = xtrans;
-  */
-  //printf("Final Result \n");
-  // // Printing the values
-  // for (int i = 0; i < x.size(); i++)
-  // {
-  //   for (int j = 0; j < x[i].size(); j++)
-  //   {
-  //     cout << x[i][j] << "  ";
-  //   }
-  //   cout << endl;
-  // }
 
 }
 
-//main method
-//int main(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
   int MAX;
@@ -247,7 +170,7 @@ int main(int argc, char *argv[])
   ifstream f(datasetImages[imageIndex[MAX]]);
   string line;
   int firstIdx = 0;
-  
+
   // Reading the txt file to store in a 2d matrix.
   while (getline(f, line)) 
   {
@@ -255,56 +178,16 @@ int main(int argc, char *argv[])
       stringstream ss(line);
       int secondIdx = 0;
       while (ss >> val) 
-      {
+      { 
           arr[firstIdx][secondIdx] = val;
           secondIdx++;
       }
       firstIdx++;
   }
-//vector<complex<double>> arr = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 0, 0, 0, 0, 0}; 
-  
-  /*
-  // Initializing the values.
-  for (int i = 0; i < arr.size(); i++)
-  {
-    for (int j = 0; j < arr[i].size(); j++)
-    {
-      arr[i][j] = i; 
-    }
-  }
-  */
 
   fft2d(arr);
-  //cout <<"The coefficients are : ";
-
-  /*
-  // Printing the values
-  for (int i = 0; i < arr.size(); i++)
-  {
-    for (int j = 0; j < arr[i].size(); j++)
-    {
-      cout << arr[i][j] << "  ";
-    }
-    cout << endl;
-  }
-  */
 
   ifft2d(arr);
-
-  //cout <<"After ifft : ";
-
-  /*
-  // Printing the values
-  for (int i = 0; i < arr.size(); i++)
-  {
-    for (int j = 0; j < arr[i].size(); j++)
-    {
-      cout << arr[i][j] << "  ";
-    }
-    cout << endl;
-  }
-  */
-
 
   ofstream myfile (resultantImages[imageIndex[MAX]]);
 
