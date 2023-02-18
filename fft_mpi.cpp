@@ -27,8 +27,12 @@ string path_txt8192 = "results/fft_txt/8192x8192_fft.txt";
 
 string resultantImages[5] = {path_txt512, path_txt1024, path_txt2048, path_txt4096, path_txt8192};
 
-// This function computes the 1D FFT of a given complex vector.
-// The input vector is overwritten with the result.
+/**
+  Function to apply fast fourier transform for
+  vector of complex numbers.
+  
+  The input vector is overwritten with the result.
+*/
 void fft1d(complex<double> *x, int N) 
 {
   // Base case
@@ -55,6 +59,12 @@ void fft1d(complex<double> *x, int N)
   }
 }
 
+/**
+  Function to apply inverse fast fourier transform for
+  vector of complex numbers.
+
+  The input vector is overwritten with the result.
+*/
 void ifft1d(complex<double> *x, int N)
 {
   // Taking the conjugate 
@@ -62,6 +72,7 @@ void ifft1d(complex<double> *x, int N)
   {
     x[i] = conj(x[i]);
   }
+  // Calling the 1d-fft.
   fft1d(x, N);
   
   // Taking the conjugate 
@@ -85,6 +96,8 @@ int main (int argc, char *argv[])
   int myrank, size;
   int MAX;
 
+  // For error checking, whether the size of the image is given
+  // correctly.
   if ((argc == 2) && 
       (atoi(argv[1]) == 512 || atoi(argv[1]) == 1024 || 
        atoi(argv[1]) == 2048 || atoi(argv[1]) == 4096 ||
@@ -111,21 +124,6 @@ int main (int argc, char *argv[])
   {
     t1 = MPI_Wtime();
     complex<double> buf[rows][cols]; 
-    
-    
-    /*
-    // Older code snippet to provide values in the 2d array.
-    int count = 0;
-    // I'm the master
-    for (int i = 0; i < MAX; ++i) 
-    {
-      for (int j = 0; j < MAX; ++j) 
-      {
-        buf[i][j] = count;
-        count++;
-      }
-    }
-    */
     
     // Reading the file path.
     ifstream f(datasetImages[imageIndex[MAX]]);
