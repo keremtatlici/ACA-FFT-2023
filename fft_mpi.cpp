@@ -9,8 +9,10 @@
 
 using namespace std;
 
+// Mapping the different image sizes to an integer
 map<int, int> imageIndex{{ 512, 0 }, { 1024, 1 }, { 2048, 2 }, { 4096, 3 }, { 8192, 4 }};
 
+// Paths to the different input and output files
 string path_image512 = "datasets/gray/512x512_gray.txt";
 string path_image1024 = "datasets/gray/1024x1024_gray.txt";
 string path_image2048 = "datasets/gray/2048x2048_gray.txt";
@@ -27,8 +29,10 @@ string path_txt8192 = "results/fft_txt/8192x8192_fft.txt";
 
 string resultantImages[5] = {path_txt512, path_txt1024, path_txt2048, path_txt4096, path_txt8192};
 
-// This function computes the 1D FFT of a given complex vector.
-// The input vector is overwritten with the result.
+/**
+ * Function to apply fast Fourier transform to a vector of complex numbers.
+ * The input vector is overwritten with the result.
+ */
 void fft1d(complex<double> *x, int N) 
 {
   // Base case
@@ -55,6 +59,14 @@ void fft1d(complex<double> *x, int N)
   }
 }
 
+/**
+
+Function to apply inverse fast Fourier transform to
+
+a vector of complex numbers.
+
+The input vector is overwritten with the result.
+*/
 void ifft1d(complex<double> *x, int N)
 {
   // Taking the conjugate 
@@ -62,6 +74,7 @@ void ifft1d(complex<double> *x, int N)
   {
     x[i] = conj(x[i]);
   }
+  // Calling the 1d-fft.
   fft1d(x, N);
   
   // Taking the conjugate 
@@ -85,6 +98,8 @@ int main (int argc, char *argv[])
   int myrank, size;
   int MAX;
 
+  // For error checking, whether the size of the image is given
+  // correctly.
   if ((argc == 2) && 
       (atoi(argv[1]) == 512 || atoi(argv[1]) == 1024 || 
        atoi(argv[1]) == 2048 || atoi(argv[1]) == 4096 ||
@@ -111,21 +126,6 @@ int main (int argc, char *argv[])
   {
     t1 = MPI_Wtime();
     complex<double> buf[rows][cols]; 
-    
-    
-    /*
-    // Older code snippet to provide values in the 2d array.
-    int count = 0;
-    // I'm the master
-    for (int i = 0; i < MAX; ++i) 
-    {
-      for (int j = 0; j < MAX; ++j) 
-      {
-        buf[i][j] = count;
-        count++;
-      }
-    }
-    */
     
     // Reading the file path.
     ifstream f(datasetImages[imageIndex[MAX]]);
@@ -205,25 +205,6 @@ int main (int argc, char *argv[])
         int retVal = MPI_Recv(buf[i*chunk], MAX * chunk, MPI_C_DOUBLE_COMPLEX, i, 555, MPI_COMM_WORLD, &status);
     }
     
-    /*
-    // These operations are not needed.
-    // Transpose the matrix second time
-    for (size_t i = 0; i < rows; ++i)
-    {
-      for (size_t j = 0; j < cols; ++j)
-        xtrans[j][i] = buf[i][j];
-    }
-
-    //Copying the values from xtrans back to x second time
-    for (size_t i = 0; i < rows; ++i)
-    {
-      for (size_t j = 0; j < cols; ++j)
-        buf[i][j] = xtrans[i][j];
-    }
-    //printf("I'm the master; I received the following values:\n");
-
-    */
-    
     // FFT Part ends here.
     /****************************************************************************************************
      ****************************************************************************************************
@@ -288,18 +269,6 @@ int main (int argc, char *argv[])
     */
     // IFFT Part ends here.
     
-    /* 
-    // Printing the values.
-    for (int i = 0; i < MAX; ++i) 
-    {
-      for (int j = 0; j < MAX; ++j) 
-      {
-        //printf("Rank : %d, Value %d\n", myrank, buf[i][j]);
-        cout <<"Rank : " << myrank << " value : " << buf[i][j] << endl;
-      }
-    }
-    */
-    
     // Opening the file to store results in a txt file.
     ofstream myfile (resultantImages[imageIndex[MAX]]);
 
@@ -324,18 +293,6 @@ int main (int argc, char *argv[])
     // Receiving the value for the 1st time.
     int retVal = MPI_Recv(buf1, MAX * chunk, MPI_C_DOUBLE_COMPLEX, 0, 555, MPI_COMM_WORLD, &status);
    
-   /*
-    printf("I'm the slave; I received the following values:\n");
-    
-    for (int i = 0; i < chunk; ++i) 
-    {
-      for (int j = 0; j < MAX; ++j) 
-      {
-        //printf("Rank : %d, Value %d\n", myrank, buf[i][j]);
-        cout <<"Rank : " << myrank << " value : " << buf1[i][j] << endl;
-      }
-    }
-    */
 
     /****************************************************************************************************
      ****************************************************************************************************
@@ -348,20 +305,6 @@ int main (int argc, char *argv[])
     {
       fft1d(buf1[row], MAX);
     }
-    
-    /*
-    printf("I'm the slave; I received the following values:\n");
-    
-    for (int i = 0; i < chunk; ++i) 
-    {
-      for (int j = 0; j < MAX; ++j) 
-      {
-        //printf("Rank : %d, Value %d\n", myrank, buf[i][j]);
-        //if (myrank == 1)
-          cout <<"Rank : " << myrank << " value : " << buf1[i][j] << endl;
-      }
-    }
-     */
 
     // Sending the data to the master first time.
     retVal = MPI_Send(buf1, MAX * chunk, MPI_C_DOUBLE_COMPLEX, 0, 555, MPI_COMM_WORLD);
@@ -379,7 +322,6 @@ int main (int argc, char *argv[])
     retVal = MPI_Send(buf1, MAX * chunk, MPI_C_DOUBLE_COMPLEX, 0, 555, MPI_COMM_WORLD);
     // FFT Part ends here.
     /****************************************************************************************************
-     ****************************************************************************************************
      ****************************************************************************************************
     */
     // IFFT Part starts here.
@@ -408,7 +350,6 @@ int main (int argc, char *argv[])
     retVal = MPI_Send(buf1, MAX * chunk, MPI_C_DOUBLE_COMPLEX, 0, 555, MPI_COMM_WORLD);
     /****************************************************************************************************
      ****************************************************************************************************
-     ****************************************************************************************************
     */
     // IFFT Part ends here.
 
@@ -418,7 +359,7 @@ int main (int argc, char *argv[])
   MPI_Finalize();
 
   if (myrank == 0)
-  //cout << "Total time elapsed = " << t2-t1 << " seconds" << endl;
+
   cout << t2-t1;
   return 0;
 }
