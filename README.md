@@ -71,3 +71,7 @@ To convert txt files in results/fft_txt/ folder, run the command,
 ```bash
 pythond3 run_txt_images.py
 ```
+
+
+
+Authors: Ismail Kerem Tatlici, Shubham Shubhankar Sharma
